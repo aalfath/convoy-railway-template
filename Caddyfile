@@ -1,0 +1,18 @@
+{
+	admin off
+	auto_https off
+	persist_config off
+}
+
+:{$PUBLIC_PORT} {
+	# Data plane (convoy agent): source ingestion and portal event/delivery operations
+	@agent path /ingest/* /portal-api/events /portal-api/events/* /portal-api/eventdeliveries /portal-api/eventdeliveries/*
+	handle @agent {
+		reverse_proxy 127.0.0.1:5008
+	}
+
+	# Control plane (convoy server): dashboard, management API, everything else
+	handle {
+		reverse_proxy 127.0.0.1:5005
+	}
+}
